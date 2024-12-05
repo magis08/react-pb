@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { Contact, sequelize } = require('./models/contact');
+const { uploadAvatars } = require('./controllers/uploadAvatar')
+const fileUpload = require('express-fileupload')
 
 sequelize.authenticate()
   .then(() => {
@@ -22,6 +24,8 @@ sequelize.sync({ force: false }) // Set ke true jika ingin menghapus tabel lama 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(fileUpload())
 
 // Sinkronisasi Database
 sequelize.sync();
@@ -47,25 +51,35 @@ app.post('/contacts', async (req, res) => {
   }
 });
 
-app.put('/contacts/:id', async (req, res) => {
-  try {
-    console.log(req.params.id)
-    const { id } = req.params;
-    const { name, phone } = req.body;
+app.put('/contacts/:id', (req, res) => {
+  const contactId = req.params.id;
+  const { name, phone } = req.body;
 
-    const contact = await Contact.findByPk(id);
-    if (!contact) {
-      return res.status(404).json({ message: 'Contact not found' });
-    }
+  if (req.files && req.files.avatar) {
+    const avatar = req.files.avatar;
+    const avatarPath = `./uploads/${contactId}-${avatar.name}`;
 
-    contact.name = name;
-    contact.phone = phone;
-    await contact.save();
+    avatar.mv(avatarPath, (err) => {
+      if (err) return res.status(500).send(err);
 
-    res.json(contact);
-  } catch (err) {
-    console.error('Error updating contact:', err);
-    res.status(500).json({ message: 'Internal Server Error' });
+      const updatedContact = {
+        id: contactId,
+        name,
+        phone,
+        avatar: avatarPath,
+      };
+
+      res.json(updatedContact);
+    });
+  } else {
+    const updatedContact = {
+      id: contactId,
+      name,
+      phone,
+      avatar: null,
+    };
+
+    res.json(updatedContact);
   }
 });
 

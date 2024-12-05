@@ -13,6 +13,10 @@ const Contact = sequelize.define('Contact', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  avatar: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
 });
 
 module.exports = { Contact, sequelize };

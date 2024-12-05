@@ -5,6 +5,8 @@ function LandingPage() {
     const [contacts, setContacts] = useState([]);
     const [search, setSearch] = useState('');
     const [sortOption, setSortOption] = useState('id-ascending');
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [contactToDelete, setContactToDelete] = useState(null); 
 
     useEffect(() => {
         fetch('http://localhost:5000/contacts')
@@ -41,13 +43,23 @@ function LandingPage() {
     };
 
     const handleDelete = (id) => {
-        // Menghapus kontak dari daftar lokal
         setContacts(contacts.filter((contact) => contact.id !== id));
-        // Menghapus kontak di server
         fetch(`http://localhost:5000/contacts/${id}`, {
             method: 'DELETE',
-        });
+        }).then(() => {
+            setShowDeleteModal(false)
+        })
     };
+
+    const openDeleteModal = (contact) => {
+        setShowDeleteModal(true)
+        setContactToDelete(contact)
+    }
+
+    const closeDeleteModal = () => {
+        setShowDeleteModal(false)
+        setContactToDelete(null)
+    }
 
     const handleEdit = (contact) => {
         // Mengubah kontak menjadi editable
@@ -56,14 +68,20 @@ function LandingPage() {
         ));
     };
 
-    const handleSaveEdit = (id, name, phone) => {
-        const updatedContact = { id, name, phone };
+    const handleSaveEdit = (id, name, phone, avatarFile) => {
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('phone', phone);
+
+        // Jika ada file avatar, tambahkan ke formData
+        if (avatarFile) {
+            formData.append('avatar', avatarFile);
+        }
+
+        // Mengirim data menggunakan fetch
         fetch(`http://localhost:5000/contacts/${id}`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(updatedContact),
+            body: formData,
         })
             .then((res) => res.json())
             .then((updatedContact) => {
@@ -74,11 +92,21 @@ function LandingPage() {
             .catch((error) => console.error('Error updating contact:', error));
     };
 
+
     const handleCancelEdit = (id) => {
         // Mengembalikan kontak ke status sebelumnya tanpa menyimpan perubahan
         setContacts(contacts.map((contact) =>
             contact.id === id ? { ...contact, editing: false } : contact
         ));
+    };
+
+    const handleAvatarChange = (e, contactId) => {
+        const file = e.target.files[0];
+        if (file) {
+            setContacts(contacts.map(item =>
+                item.id === contactId ? { ...item, avatarFile: file } : item
+            ));
+        }
     };
 
     return (
@@ -146,10 +174,17 @@ function LandingPage() {
                                             ))
                                         }
                                     />
+
+                                    {/* Input untuk memilih avatar baru */}
+                                    <input
+                                        type="file"
+                                        onChange={(e) => handleAvatarChange(e, contact.id)}
+                                    />
+
                                     <button
                                         className="btn save-btn"
                                         onClick={() =>
-                                            handleSaveEdit(contact.id, contact.name, contact.phone)
+                                            handleSaveEdit(contact.id, contact.name, contact.phone, contact.avatarFile)
                                         }
                                     >
                                         Save
@@ -162,9 +197,18 @@ function LandingPage() {
                                     </button>
                                 </div>
                             ) : (
-                                <div>
-                                    <h5 className="card-title">{contact.name}</h5>
-                                    <p className="card-text">{contact.phone}</p>
+                                <div className="contact-item">
+                                    <div className="avatar">
+                                        <img
+                                            src={contact.avatar || 'images.png'}
+                                            alt={contact.name}
+                                            className="avatar-img"
+                                        />
+                                    </div>
+                                    <div className="contact-info">
+                                        <h5 className="card-title">{contact.name}</h5>
+                                        <p className="card-text">{contact.phone}</p>
+                                    </div>
                                     <div className="card-actions">
                                         <button
                                             className="btn edit-btn"
@@ -174,7 +218,7 @@ function LandingPage() {
                                         </button>
                                         <button
                                             className="btn delete-btn"
-                                            onClick={() => handleDelete(contact.id)}
+                                            onClick={() => openDeleteModal(contact)}
                                         >
                                             Delete
                                         </button>
@@ -185,6 +229,28 @@ function LandingPage() {
                     </div>
                 ))}
             </div>
+
+            {/* Modal Delete */}
+            {showDeleteModal && contactToDelete && (
+                <div className='modal'>
+                    <div className="modal-content">
+                        <h4>Are you sure you want to delete this contact?</h4>
+                        <p>{contactToDelete.name} ({contactToDelete.phone})</p>
+                        <button
+                            className="btn delete-confirm-btn"
+                            onClick={() => handleDelete(contactToDelete.id)}
+                        >
+                            Delete
+                        </button>
+                        <button
+                            className="btn cancel-btn"
+                            onClick={closeDeleteModal}
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
