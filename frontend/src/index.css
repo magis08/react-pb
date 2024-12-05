@@ -1,13 +1,196 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* General Container */
+.container {
+  width: 100%;
+  margin: 0 auto;
+  padding-top: 20px;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* Controls */
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+/* Sort Button */
+.sort-btn {
+  padding: 8px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 5px;
+  flex-shrink: 0; /* Mencegah tombol mengecil */
+}
+
+.sort-btn:hover {
+  background-color: #45a049;
+}
+
+/* Search Input */
+.search-input {
+  padding: 8px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  flex-grow: 1; /* Agar input memanfaatkan ruang yang tersisa */
+  margin: 0 10px; /* Memberikan jarak kiri dan kanan antara input dengan tombol */
+  box-sizing: border-box;
+}
+
+/* Add Contact Button */
+.add-btn {
+  padding: 8px 20px;
+  background-color: #007BFF;
+  color: white;
+  text-decoration: none;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  flex-shrink: 0; /* Menghindari tombol mengecil */
+}
+
+.add-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Contact Cards */
+.contact-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center; /* Memusatkan kartu secara horizontal */
+  width: 100%; /* Agar daftar kartu mengikuti lebar browser */
+  padding: 0 20px; /* Memberikan padding agar kartu tidak mepet tepi browser */
+  box-sizing: border-box;
+}
+
+.card {
+  width: calc(33.33% - 20px); /* Tiga kartu per baris */
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  box-sizing: border-box;
+}
+
+.card-body {
+  padding: 15px;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.card-text {
+  font-size: 1rem;
+  color: #666;
+}
+
+/* Card Actions (Edit and Delete) */
+.card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.edit-btn, .delete-btn {
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 5px;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.edit-btn {
+  background-color: #FFA500;
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color: #e68900;
+}
+
+.delete-btn {
+  background-color: #FF5733;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #e04f29;
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  text-align: center;
+}
+
+.modal input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.modal button {
+  padding: 8px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  margin: 5px;
+}
+
+.save-btn {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.cancel-btn {
+  background-color: #ccc;
+  color: white;
+}
+
+.delete-confirm-btn {
+  background-color: #FF5733;
+  color: white;
+}
+
+.save-btn:hover {
+  background-color: #45a049;
+}
+
+.cancel-btn:hover {
+  background-color: #999;
+}
+
+.delete-confirm-btn:hover {
+  background-color: #e04f29;
 }

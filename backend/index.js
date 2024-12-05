@@ -28,18 +28,59 @@ sequelize.sync();
 
 // Routes API
 app.get('/contacts', async (req, res) => {
-  const contacts = await Contact.findAll();
-  res.json(contacts);
+  try {
+    const contacts = await Contact.findAll();
+    res.json(contacts);
+  } catch (err) {
+    console.error('Error fetching contacts:', err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
 });
 
 app.post('/contacts', async (req, res) => {
-  const contact = await Contact.create(req.body);
-  res.json(contact);
+  try {
+    const contact = await Contact.create(req.body);
+    res.json(contact);
+  } catch (err) {
+    console.error('Error creating contact:', err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+app.put('/contacts/:id', async (req, res) => {
+  try {
+    console.log(req.params.id)
+    const { id } = req.params;
+    const { name, phone } = req.body;
+
+    const contact = await Contact.findByPk(id);
+    if (!contact) {
+      return res.status(404).json({ message: 'Contact not found' });
+    }
+
+    contact.name = name;
+    contact.phone = phone;
+    await contact.save();
+
+    res.json(contact);
+  } catch (err) {
+    console.error('Error updating contact:', err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
 });
 
 app.delete('/contacts/:id', async (req, res) => {
-  await Contact.destroy({ where: { id: req.params.id } });
-  res.json({ message: 'Contact deleted' });
+  try {
+    const { id } = req.params;
+    const deletedCount = await Contact.destroy({ where: { id } });
+    if (deletedCount === 0) {
+      return res.status(404).json({ message: 'Contact not found' });
+    }
+    res.json({ message: 'Contact deleted' });
+  } catch (err) {
+    console.error('Error deleting contact:', err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
 });
 
 app.listen(5000, () => console.log('Server running on http://localhost:5000'));

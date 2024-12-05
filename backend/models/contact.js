@@ -1,7 +1,7 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const sequelize = new Sequelize('db_pb', 'agis', '12345', {
-  host: 'localhost', // Atau alamat server PostgreSQL
-  dialect: 'postgres', // Menggunakan PostgreSQL
+  host: 'localhost',
+  dialect: 'postgres',
 });
 
 const Contact = sequelize.define('Contact', {
@@ -12,9 +12,6 @@ const Contact = sequelize.define('Contact', {
   phone: {
     type: DataTypes.STRING,
     allowNull: false,
-  },
-  email: {
-    type: DataTypes.STRING,
   },
 });
 
